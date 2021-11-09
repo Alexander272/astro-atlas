@@ -1,10 +1,23 @@
 package main
 
 import (
+	"context"
+	"errors"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/Alexander272/astro-atlas/internal/config"
+	"github.com/Alexander272/astro-atlas/internal/handlers"
+	"github.com/Alexander272/astro-atlas/internal/repository"
+	"github.com/Alexander272/astro-atlas/internal/server"
+	"github.com/Alexander272/astro-atlas/internal/service"
+	"github.com/Alexander272/astro-atlas/pkg/auth"
 	"github.com/Alexander272/astro-atlas/pkg/database/mongo"
+	"github.com/Alexander272/astro-atlas/pkg/database/redis"
+	"github.com/Alexander272/astro-atlas/pkg/hasher"
 	"github.com/Alexander272/astro-atlas/pkg/logger"
 	"github.com/joho/godotenv"
 )
@@ -22,7 +35,6 @@ import (
 
 func main() {
 	logger.Init(os.Stdout)
-	logger.Debug("init logger")
 	if err := godotenv.Load(); err != nil {
 		logger.Fatalf("error loading env variables: %s", err.Error())
 	}
@@ -38,23 +50,58 @@ func main() {
 	}
 	db := mongoClient.Database(conf.Mongo.Name)
 
-	logger.Debug(db)
+	client, err := redis.NewRedisClient(redis.Config{
+		Host:     conf.Redis.Host,
+		Port:     conf.Redis.Port,
+		DB:       conf.Redis.DB,
+		Password: conf.Redis.Password,
+	})
+	if err != nil {
+		logger.Fatalf("failed to initialize redis %s", err.Error())
+	}
 
-	// client, err := redis.NewRedisClient(redis.Config{
-	// 	Host:     conf.Redis.Host,
-	// 	Port:     conf.Redis.Port,
-	// 	DB:       conf.Redis.DB,
-	// 	Password: conf.Redis.Password,
-	// })
-	// if err != nil {
-	// 	logger.Fatalf("failed to initialize redis %s", err.Error())
-	// }
-
-	// hasher := hasher.NewBcryptHasher(conf.Auth.Bcrypt.MinCost, conf.Auth.Bcrypt.DefaultCost, conf.Auth.Bcrypt.MaxCost)
-	// tokenManager, err := auth.NewManager(conf.Auth.JWT.Key)
-	// if err != nil {
-	// 	logger.Fatalf("failed to initialize token manager: %s", err.Error())
-	// }
+	hasher := hasher.NewBcryptHasher(conf.Auth.Bcrypt.MinCost, conf.Auth.Bcrypt.DefaultCost, conf.Auth.Bcrypt.MaxCost)
+	tokenManager, err := auth.NewManager(conf.Auth.JWT.Key)
+	if err != nil {
+		logger.Fatalf("failed to initialize token manager: %s", err.Error())
+	}
 
 	// Services, Repos & API Handlers
+	repos := repository.NewRepositories(db, client)
+	services := service.NewServices(service.Deps{
+		Repos:           repos,
+		Hasher:          hasher,
+		TokenManager:    tokenManager,
+		AccessTokenTTL:  conf.Auth.JWT.AccessTokenTTL,
+		RefreshTokenTTL: conf.Auth.JWT.RefreshTokenTTL,
+		Domain:          conf.Http.Domain,
+	})
+	handlers := handlers.NewHandler(services)
+
+	// HTTP Server
+	srv := server.NewServer(conf, handlers.Init(conf))
+	go func() {
+		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
+			logger.Fatalf("error occurred while running http server: %s\n", err.Error())
+		}
+	}()
+	logger.Infof("Application started on port: %s", conf.Http.Port)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
+	<-quit
+
+	const timeout = 5 * time.Second
+
+	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
+	defer shutdown()
+
+	if err := srv.Stop(ctx); err != nil {
+		logger.Errorf("failed to stop server: %v", err)
+	}
+
+	if err := mongoClient.Disconnect(context.Background()); err != nil {
+		logger.Errorf("error occured on db connection close: %s", err.Error())
+	}
 }
