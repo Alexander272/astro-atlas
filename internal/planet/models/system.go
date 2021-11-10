@@ -24,20 +24,20 @@ type System struct {
 	PlanetCount   int32   `json:"planetCount" bson:"planetCount"`
 }
 
-// func NewSystem(dto CreateSystemDTO) System {
-// 	return System{
-// 		Constellation: dto.Constellation,
-// 		Magnitude:     dto.Magnitude,
-// 		Distance:      dto.Distance,
-// 		Class:         dto.Class,
-// 		Weight:        dto.Weight,
-// 		Radius:        dto.Radius,
-// 		Temperature:   dto.Temperature,
-// 		Metallicity:   dto.Metallicity,
-// 		Age:           dto.Age,
-// 		PlanetCount:   dto.PlanetCount,
-// 	}
-// }
+func NewSystem(dto CreateSystemDTO) System {
+	return System{
+		Constellation: dto.Constellation,
+		Magnitude:     dto.Magnitude,
+		Distance:      dto.Distance,
+		Class:         dto.Class,
+		Weight:        dto.Weight,
+		Radius:        dto.Radius,
+		Temperature:   dto.Temperature,
+		Metallicity:   dto.Metallicity,
+		Age:           dto.Age,
+		PlanetCount:   dto.PlanetCount,
+	}
+}
 
 type CreateSystemDTO struct {
 	Constellation string  `json:"constellation"`
