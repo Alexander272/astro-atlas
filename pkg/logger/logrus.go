@@ -23,10 +23,16 @@ func Init(out io.Writer) {
 	logrus.SetOutput(out)
 }
 
+func Trace(msg ...interface{}) {
+	logrus.Trace(msg...)
+}
+func Tracef(format string, msg ...interface{}) {
+	logrus.Tracef(format, msg...)
+}
+
 func Debug(msg ...interface{}) {
 	logrus.Debug(msg...)
 }
-
 func Debugf(format string, args ...interface{}) {
 	logrus.Debugf(format, args...)
 }
@@ -34,7 +40,6 @@ func Debugf(format string, args ...interface{}) {
 func Info(msg ...interface{}) {
 	logrus.Info(msg...)
 }
-
 func Infof(format string, args ...interface{}) {
 	logrus.Infof(format, args...)
 }
@@ -42,7 +47,6 @@ func Infof(format string, args ...interface{}) {
 func Error(msg ...interface{}) {
 	logrus.Error(msg...)
 }
-
 func Errorf(format string, args ...interface{}) {
 	logrus.Errorf(format, args...)
 }
@@ -50,7 +54,6 @@ func Errorf(format string, args ...interface{}) {
 func Fatal(msg ...interface{}) {
 	logrus.Fatal(msg...)
 }
-
 func Fatalf(format string, args ...interface{}) {
 	logrus.Fatalf(format, args...)
 }

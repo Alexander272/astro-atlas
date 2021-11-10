@@ -1,0 +1,37 @@
+version: "3.4"
+
+services:
+    mongodb:
+        image: mongo:4.4-bionic
+        container_name: mongodb
+        environment:
+            - MONGO_DATA_DIR=/data/db
+            - MONGO_LOG_DIR=/dev/null
+            - MONGODB_DATABASE=portfolio
+            - MONGO_INITDB_ROOT_USERNAME=alexander
+            - MONGO_INITDB_ROOT_PASSWORD=password
+            - MONGO_INITDB_USERNAME=alexander
+            - MONGO_INITDB_PASSWORD=password
+        command: [--auth]
+        volumes:
+            - ./.data/db:/data/db
+        ports:
+            - 27017:27017
+        networks:
+            - mongo-network
+
+    redis:
+        image: "redis:6.2-alpine"
+        volumes:
+            - ./.data/redis/redis.conf:/usr/local/etc/redis/redis.conf
+            - ./.data/redis/data:/var/lib/redis
+        ports:
+            - 6379:6379
+
+volumes:
+    volume-mongo:
+        driver: local
+
+networks:
+    mongo-network:
+        driver: bridge
