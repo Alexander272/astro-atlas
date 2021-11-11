@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Alexander272/astro-atlas/internal/config"
+	"github.com/Alexander272/astro-atlas/internal/planet/handlers"
 	"github.com/Alexander272/astro-atlas/internal/service"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -58,8 +59,10 @@ func (h *Handler) Init(conf *config.Config) *gin.Engine {
 }
 
 func (h *Handler) initAPI(router *gin.Engine) {
-	// api := router.Group("/api")
-	// {
+	planetHandler := handlers.NewHandler(h.services)
 
-	// }
+	api := router.Group("/api")
+	{
+		planetHandler.Init(api)
+	}
 }

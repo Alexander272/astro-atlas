@@ -11,6 +11,7 @@ import (
 
 type Services struct {
 	System planetService.ISystems
+	Planet planetService.IPlanet
 }
 
 type Deps struct {
@@ -26,5 +27,6 @@ type Deps struct {
 func NewServices(deps Deps) *Services {
 	return &Services{
 		System: planetService.NewSystemService(deps.Repos),
+		Planet: planetService.NewPlanetService(deps.Repos),
 	}
 }

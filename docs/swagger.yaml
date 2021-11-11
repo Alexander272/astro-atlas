@@ -1,0 +1,491 @@
+basePath: /api
+definitions:
+  handlers.dataResponse:
+    properties:
+      count:
+        type: integer
+      data:
+        type: object
+    type: object
+  handlers.idResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  handlers.response:
+    properties:
+      message:
+        type: string
+    type: object
+  models.CreatePlanetDTO:
+    properties:
+      systemId:
+        type: string
+    type: object
+  models.CreateSystemDTO:
+    properties:
+      age:
+        type: number
+      class:
+        type: string
+      constellation:
+        type: string
+      distance:
+        type: number
+      magnitude:
+        type: number
+      metallicity:
+        type: number
+      planetCount:
+        type: integer
+      radius:
+        type: number
+      temperature:
+        type: integer
+      weight:
+        type: number
+    type: object
+  models.UpdatePlanetDTO:
+    properties:
+      id:
+        type: string
+      systemId:
+        type: string
+    type: object
+  models.UpdateSystemDTO:
+    properties:
+      age:
+        type: number
+      class:
+        type: string
+      constellation:
+        type: string
+      distance:
+        type: number
+      id:
+        type: string
+      magnitude:
+        type: number
+      metallicity:
+        type: number
+      planetCount:
+        type: integer
+      radius:
+        type: number
+      temperature:
+        type: integer
+      weight:
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server for Astro Atlas App
+  title: Astro Atlas
+  version: "0.1"
+paths:
+  /planet:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка планет системы
+      operationId: getPlanetList
+      parameters:
+      - description: system id
+        in: query
+        name: system
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.dataResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      summary: Get Planet List
+      tags:
+      - planets
+  /planet/:
+    post:
+      consumes:
+      - application/json
+      description: Создание планеты
+      operationId: createPlanet
+      parameters:
+      - description: planet info
+        in: body
+        name: planet
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatePlanetDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Planet
+      tags:
+      - planets
+  /planet/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление планеты
+      operationId: deletePlanet
+      parameters:
+      - description: planet id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Planet
+      tags:
+      - planets
+    get:
+      consumes:
+      - application/json
+      description: Получение планеты
+      operationId: getPlanetById
+      parameters:
+      - description: planet id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.dataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      summary: Get Planet By Id
+      tags:
+      - planets
+    patch:
+      consumes:
+      - application/json
+      description: Обновление данных планеты
+      operationId: updatePlanet
+      parameters:
+      - description: planet id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: planet info
+        in: body
+        name: planet
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePlanetDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: updatePlanet
+      tags:
+      - planets
+  /system/:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка планетных систем
+      operationId: getSystemList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.dataResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      summary: Get System List
+      tags:
+      - systems
+    post:
+      consumes:
+      - application/json
+      description: Создание планетной системы
+      operationId: createSystem
+      parameters:
+      - description: system info
+        in: body
+        name: system
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateSystemDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create System
+      tags:
+      - systems
+  /system/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление планетной системы
+      operationId: deleteSystem
+      parameters:
+      - description: system id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete System
+      tags:
+      - systems
+    get:
+      consumes:
+      - application/json
+      description: Получение планетной системы
+      operationId: getSystemById
+      parameters:
+      - description: system id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.dataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      summary: Get System By Id
+      tags:
+      - systems
+    patch:
+      consumes:
+      - application/json
+      description: Обновление данных планетной системы
+      operationId: updateSystem
+      parameters:
+      - description: system id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: system info
+        in: body
+        name: system
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateSystemDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update System
+      tags:
+      - systems
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
