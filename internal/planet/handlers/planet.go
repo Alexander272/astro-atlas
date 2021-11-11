@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Alexander272/astro-atlas/internal/planet/models"
 	"github.com/Alexander272/astro-atlas/internal/service"
+	"github.com/Alexander272/astro-atlas/pkg/apperror"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +30,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		system.DELETE("/:id", h.deleteSystem)
 	}
 
-	planet := api.GET("/planet")
+	planet := api.Group("/planet")
 	{
 		planet.GET("/", h.getPlanetList)
 		planet.POST("/", h.createPlanet)
@@ -52,6 +54,10 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 func (h *Handler) getSystemList(c *gin.Context) {
 	systems, err := h.service.System.GetList(c)
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -108,6 +114,10 @@ func (h *Handler) getSystemById(c *gin.Context) {
 
 	system, err := h.service.System.GetById(c, c.Param("id"))
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -142,6 +152,10 @@ func (h *Handler) updateSystem(c *gin.Context) {
 
 	err := h.service.System.Update(c, dto)
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -170,6 +184,10 @@ func (h *Handler) deleteSystem(c *gin.Context) {
 
 	err := h.service.System.Delete(c, c.Param("id"))
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -197,6 +215,10 @@ func (h *Handler) getPlanetList(c *gin.Context) {
 
 	planets, err := h.service.Planet.GetList(c, c.Query("system"))
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -253,6 +275,10 @@ func (h *Handler) getPlanetById(c *gin.Context) {
 
 	planet, err := h.service.Planet.GetById(c, c.Param("id"))
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -288,6 +314,10 @@ func (h *Handler) updatePlanet(c *gin.Context) {
 
 	err := h.service.Planet.Update(c, dto)
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -316,6 +346,10 @@ func (h *Handler) deletePlanet(c *gin.Context) {
 
 	err := h.service.Planet.Delete(c, c.Param("id"))
 	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
+			return
+		}
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
