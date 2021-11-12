@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/Alexander272/astro-atlas/internal/planet/models"
@@ -21,7 +22,7 @@ func NewHandler(service *service.Services) *Handler {
 }
 
 func (h *Handler) Init(api *gin.RouterGroup) {
-	system := api.Group("/system")
+	system := api.Group("/systems")
 	{
 		system.GET("/", h.getSystemList)
 		system.POST("/", h.createSystem)
@@ -30,7 +31,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		system.DELETE("/:id", h.deleteSystem)
 	}
 
-	planet := api.Group("/planet")
+	planet := api.Group("/planets")
 	{
 		planet.GET("/", h.getPlanetList)
 		planet.POST("/", h.createPlanet)
@@ -50,7 +51,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /system/ [get]
+// @Router /systems/ [get]
 func (h *Handler) getSystemList(c *gin.Context) {
 	systems, err := h.service.System.GetList(c)
 	if err != nil {
@@ -73,11 +74,11 @@ func (h *Handler) getSystemList(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param system body models.CreateSystemDTO true "system info"
-// @Success 200 {object} idResponse
+// @Success 201 {object} idResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /system/ [post]
+// @Router /systems/ [post]
 func (h *Handler) createSystem(c *gin.Context) {
 	var dto models.CreateSystemDTO
 	if err := c.BindJSON(&dto); err != nil {
@@ -91,6 +92,7 @@ func (h *Handler) createSystem(c *gin.Context) {
 		return
 	}
 
+	c.Header("Location", fmt.Sprintf("/api/system/%s", id))
 	c.JSON(http.StatusCreated, idResponse{Id: id})
 }
 
@@ -105,7 +107,7 @@ func (h *Handler) createSystem(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /system/{id} [get]
+// @Router /systems/{id} [get]
 func (h *Handler) getSystemById(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
@@ -118,7 +120,7 @@ func (h *Handler) getSystemById(c *gin.Context) {
 			newResponse(c, http.StatusNotFound, apperror.ErrNotFound.Message)
 			return
 		}
-		newResponse(c, http.StatusBadRequest, err.Error())
+		newResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -138,7 +140,7 @@ func (h *Handler) getSystemById(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /system/{id} [patch]
+// @Router /systems/{id} [patch]
 func (h *Handler) updateSystem(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
@@ -149,6 +151,7 @@ func (h *Handler) updateSystem(c *gin.Context) {
 		newResponse(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	dto.Id = c.Param("id")
 
 	err := h.service.System.Update(c, dto)
 	if err != nil {
@@ -171,11 +174,11 @@ func (h *Handler) updateSystem(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "system id"
-// @Success 200 {object} response
+// @Success 204 {object} response
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /system/{id} [delete]
+// @Router /systems/{id} [delete]
 func (h *Handler) deleteSystem(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
@@ -192,7 +195,7 @@ func (h *Handler) deleteSystem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response{Message: "System deleted"})
+	c.JSON(http.StatusNoContent, response{Message: "System deleted"})
 }
 
 // @Summary Get Planet List
@@ -206,7 +209,7 @@ func (h *Handler) deleteSystem(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /planet [get]
+// @Router /planets [get]
 func (h *Handler) getPlanetList(c *gin.Context) {
 	if c.Query("system") == "" {
 		newResponse(c, http.StatusBadRequest, "empty system param")
@@ -234,11 +237,11 @@ func (h *Handler) getPlanetList(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param planet body models.CreatePlanetDTO true "planet info"
-// @Success 200 {object} idResponse
+// @Success 201 {object} idResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /planet/ [post]
+// @Router /planets/ [post]
 func (h *Handler) createPlanet(c *gin.Context) {
 	var dto models.CreatePlanetDTO
 	if err := c.BindJSON(&dto); err != nil {
@@ -252,6 +255,7 @@ func (h *Handler) createPlanet(c *gin.Context) {
 		return
 	}
 
+	c.Header("Location", fmt.Sprintf("/api/planet/%s", id))
 	c.JSON(http.StatusCreated, idResponse{Id: id})
 }
 
@@ -266,7 +270,7 @@ func (h *Handler) createPlanet(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /planet/{id} [get]
+// @Router /planets/{id} [get]
 func (h *Handler) getPlanetById(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
@@ -299,7 +303,7 @@ func (h *Handler) getPlanetById(c *gin.Context) {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /planet/{id} [patch]
+// @Router /planets/{id} [patch]
 func (h *Handler) updatePlanet(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
@@ -311,6 +315,7 @@ func (h *Handler) updatePlanet(c *gin.Context) {
 		newResponse(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	dto.Id = c.Param("id")
 
 	err := h.service.Planet.Update(c, dto)
 	if err != nil {
@@ -333,11 +338,11 @@ func (h *Handler) updatePlanet(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "planet id"
-// @Success 200 {object} response
+// @Success 204 {object} response
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /planet/{id} [delete]
+// @Router /planets/{id} [delete]
 func (h *Handler) deletePlanet(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
@@ -354,5 +359,5 @@ func (h *Handler) deletePlanet(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response{Message: "Planet deleted"})
+	c.JSON(http.StatusNoContent, response{Message: "Planet deleted"})
 }

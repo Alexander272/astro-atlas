@@ -2,6 +2,7 @@ package models
 
 type SystemShort struct {
 	Id            string  `json:"id" bson:"_id,omitempty"`
+	Name          string  `json:"name" bson:"name"`
 	Constellation string  `json:"constellation" bson:"constellation,omitempty"`
 	Magnitude     float32 `json:"magnitude" bson:"magnitude,omitempty"`
 	Distance      float32 `json:"distance" bson:"distance,omitempty"`
@@ -12,6 +13,7 @@ type SystemShort struct {
 
 type System struct {
 	Id            string  `json:"id" bson:"_id,omitempty"`
+	Name          string  `json:"name" bson:"name"`
 	Constellation string  `json:"constellation" bson:"constellation,omitempty"`
 	Magnitude     float32 `json:"magnitude" bson:"magnitude,omitempty"`
 	Distance      float32 `json:"distance" bson:"distance,omitempty"`
@@ -26,6 +28,7 @@ type System struct {
 
 func NewSystem(dto CreateSystemDTO) System {
 	return System{
+		Name:          dto.Name,
 		Constellation: dto.Constellation,
 		Magnitude:     dto.Magnitude,
 		Distance:      dto.Distance,
@@ -40,6 +43,7 @@ func NewSystem(dto CreateSystemDTO) System {
 }
 
 type CreateSystemDTO struct {
+	Name          string  `json:"name" binding:"required"`
 	Constellation string  `json:"constellation"`
 	Magnitude     float32 `json:"magnitude"`
 	Distance      float32 `json:"distance"`
@@ -49,7 +53,7 @@ type CreateSystemDTO struct {
 	Temperature   int32   `json:"temperature"`
 	Metallicity   float32 `json:"metallicity"`
 	Age           float32 `json:"age"`
-	PlanetCount   int32   `json:"planetCount"`
+	PlanetCount   int32   `json:"planetCount" binding:"required"`
 }
 
 // func UpdateSystem(dto UpdateSystemDTO) System {
@@ -70,6 +74,7 @@ type CreateSystemDTO struct {
 
 type UpdateSystemDTO struct {
 	Id            string  `json:"id"`
+	Name          string  `json:"name"`
 	Constellation string  `json:"constellation"`
 	Magnitude     float32 `json:"magnitude"`
 	Distance      float32 `json:"distance"`

@@ -49,7 +49,7 @@ func (h *Handler) Init(conf *config.Config) *gin.Engine {
 	}
 
 	// Init router
-	router.GET("/ping", func(c *gin.Context) {
+	router.GET("/api/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
 

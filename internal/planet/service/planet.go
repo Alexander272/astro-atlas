@@ -20,12 +20,21 @@ func NewPlanetService(repo *repository.Repositories) *PlanetService {
 	}
 }
 
-func (s *PlanetService) Create(ctx context.Context, dto models.CreatePlanetDTO) (string, error) {
-	return "", nil
+func (s *PlanetService) Create(ctx context.Context, dto models.CreatePlanetDTO) (planetId string, err error) {
+	planet := models.NewPlanet(dto)
+	planetId, err = s.repo.Planet.Create(ctx, planet)
+	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			return planetId, err
+		}
+		return planetId, fmt.Errorf("failed to create planet. error: %w", err)
+	}
+
+	return planetId, nil
 }
 
-func (s *PlanetService) GetList(ctx context.Context, systemId string) ([]models.PlanetShort, error) {
-	planets, err := s.repo.Planet.GetList(ctx, systemId)
+func (s *PlanetService) GetList(ctx context.Context, systemId string) (planets []models.PlanetShort, err error) {
+	planets, err = s.repo.Planet.GetList(ctx, systemId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return planets, err
@@ -39,8 +48,8 @@ func (s *PlanetService) GetList(ctx context.Context, systemId string) ([]models.
 	return planets, nil
 }
 
-func (s *PlanetService) GetById(ctx context.Context, planetId string) (models.Planet, error) {
-	planet, err := s.repo.Planet.GetById(ctx, planetId)
+func (s *PlanetService) GetById(ctx context.Context, planetId string) (planet models.Planet, err error) {
+	planet, err = s.repo.Planet.GetById(ctx, planetId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return planet, err
@@ -51,6 +60,13 @@ func (s *PlanetService) GetById(ctx context.Context, planetId string) (models.Pl
 }
 
 func (s *PlanetService) Update(ctx context.Context, dto models.UpdatePlanetDTO) error {
+	err := s.repo.Planet.Update(ctx, models.Planet(dto))
+	if err != nil {
+		if errors.Is(err, apperror.ErrNotFound) {
+			return err
+		}
+		return fmt.Errorf("failed to update planet. error: %w", err)
+	}
 	return nil
 }
 
