@@ -47,7 +47,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 // @ID getSystemList
 // @Accept json
 // @Produce json
-// @Success 200 {array} dataResponse
+// @Success 200 {object} dataResponse{data=[]models.SystemShort}
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -103,7 +103,7 @@ func (h *Handler) createSystem(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "system id"
-// @Success 200 {object} dataResponse
+// @Success 200 {object} dataResponse{data=models.System}
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -144,6 +144,7 @@ func (h *Handler) getSystemById(c *gin.Context) {
 func (h *Handler) updateSystem(c *gin.Context) {
 	if c.Param("id") == "" {
 		newResponse(c, http.StatusBadRequest, "empty id param")
+		return
 	}
 
 	var dto models.UpdateSystemDTO
@@ -205,7 +206,7 @@ func (h *Handler) deleteSystem(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param system query string true "system id"
-// @Success 200 {array} dataResponse
+// @Success 200 {object} dataResponse{data=[]models.PlanetShort}
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -266,7 +267,7 @@ func (h *Handler) createPlanet(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "planet id"
-// @Success 200 {object} dataResponse
+// @Success 200 {object} dataResponse{data=models.Planet}
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response

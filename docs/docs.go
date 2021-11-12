@@ -23,7 +23,192 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/planet": {
+        "/auth/refresh": {
+            "post": {
+                "description": "обновление токенов доступа",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh",
+                "operationId": "refresh",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_user_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Token"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/sign-in": {
+            "post": {
+                "description": "вход в систему",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Sign In",
+                "operationId": "signIn",
+                "parameters": [
+                    {
+                        "description": "credentials",
+                        "name": "signIn",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SignInUserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_user_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Token"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/sign-out": {
+            "post": {
+                "description": "выход из системы",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Sign Out",
+                "operationId": "signOut",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/planets": {
             "get": {
                 "description": "Получение списка планет системы",
                 "consumes": [
@@ -50,40 +235,52 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.dataResponse"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_planet_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.PlanetShort"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
             }
         },
-        "/planet/": {
+        "/planets/": {
             "post": {
                 "security": [
                     {
@@ -114,40 +311,40 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.idResponse"
+                            "$ref": "#/definitions/internal_planet_handlers.idResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
             }
         },
-        "/planet/{id}": {
+        "/planets/{id}": {
             "get": {
                 "description": "Получение планеты",
                 "consumes": [
@@ -174,31 +371,43 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.dataResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_planet_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Planet"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
@@ -231,34 +440,34 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "204": {
+                        "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
@@ -303,37 +512,37 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
             }
         },
-        "/system/": {
+        "/systems/": {
             "get": {
                 "description": "Получение списка планетных систем",
                 "consumes": [
@@ -351,34 +560,46 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.dataResponse"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_planet_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.SystemShort"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
@@ -413,40 +634,40 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.idResponse"
+                            "$ref": "#/definitions/internal_planet_handlers.idResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
             }
         },
-        "/system/{id}": {
+        "/systems/{id}": {
             "get": {
                 "description": "Получение планетной системы",
                 "consumes": [
@@ -473,31 +694,43 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.dataResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_planet_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.System"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
@@ -530,34 +763,34 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "204": {
+                        "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     }
                 }
@@ -602,31 +835,364 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/handlers.response"
+                            "$ref": "#/definitions/internal_planet_handlers.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "получение списка всех пользователей",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get All Users",
+                "operationId": "getAllUsers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_user_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.User"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "создание пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create User",
+                "operationId": "createUser",
+                "parameters": [
+                    {
+                        "description": "user info",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateUserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.idResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "получение данных пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User By Id",
+                "operationId": "getUserById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_user_handlers.dataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "обновление пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update User",
+                "operationId": "updateUser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "user info",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateUserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "удаление пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete User",
+                "operationId": "deleteUser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/internal_user_handlers.response"
                         }
                     }
                 }
@@ -634,7 +1200,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "handlers.dataResponse": {
+        "internal_planet_handlers.dataResponse": {
             "type": "object",
             "properties": {
                 "count": {
@@ -645,7 +1211,7 @@ var doc = `{
                 }
             }
         },
-        "handlers.idResponse": {
+        "internal_planet_handlers.idResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -653,7 +1219,34 @@ var doc = `{
                 }
             }
         },
-        "handlers.response": {
+        "internal_planet_handlers.response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_user_handlers.dataResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                }
+            }
+        },
+        "internal_user_handlers.idResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_user_handlers.response": {
             "type": "object",
             "properties": {
                 "message": {
@@ -663,14 +1256,61 @@ var doc = `{
         },
         "models.CreatePlanetDTO": {
             "type": "object",
+            "required": [
+                "name",
+                "systemId"
+            ],
             "properties": {
+                "age": {
+                    "type": "number"
+                },
+                "class": {
+                    "type": "string"
+                },
+                "dateOpened": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "detectionMethod": {
+                    "type": "string"
+                },
+                "discoverer": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "period": {
+                    "type": "number"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "speed": {
+                    "type": "number"
+                },
                 "systemId": {
                     "type": "string"
+                },
+                "temperature": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
                 }
             }
         },
         "models.CreateSystemDTO": {
             "type": "object",
+            "required": [
+                "name",
+                "planetCount"
+            ],
             "properties": {
                 "age": {
                     "type": "number"
@@ -690,6 +1330,9 @@ var doc = `{
                 "metallicity": {
                     "type": "number"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "planetCount": {
                     "type": "integer"
                 },
@@ -704,14 +1347,242 @@ var doc = `{
                 }
             }
         },
-        "models.UpdatePlanetDTO": {
+        "models.CreateUserDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "role"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Planet": {
             "type": "object",
             "properties": {
+                "age": {
+                    "type": "number"
+                },
+                "class": {
+                    "type": "string"
+                },
+                "dateOpened": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "detectionMethod": {
+                    "type": "string"
+                },
+                "discoverer": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "period": {
+                    "type": "number"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "speed": {
+                    "type": "number"
+                },
+                "systemId": {
+                    "type": "string"
+                },
+                "temperature": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.PlanetShort": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "number"
+                },
+                "class": {
+                    "type": "string"
+                },
+                "dateOpened": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "systemId": {
                     "type": "string"
+                }
+            }
+        },
+        "models.SignInUserDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.System": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "number"
+                },
+                "class": {
+                    "type": "string"
+                },
+                "constellation": {
+                    "type": "string"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "magnitude": {
+                    "type": "number"
+                },
+                "metallicity": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "planetCount": {
+                    "type": "integer"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "temperature": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.SystemShort": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "number"
+                },
+                "class": {
+                    "type": "string"
+                },
+                "constellation": {
+                    "type": "string"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "magnitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "planetCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Token": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdatePlanetDTO": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "number"
+                },
+                "class": {
+                    "type": "string"
+                },
+                "dateOpened": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "detectionMethod": {
+                    "type": "string"
+                },
+                "discoverer": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "period": {
+                    "type": "number"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "speed": {
+                    "type": "number"
+                },
+                "systemId": {
+                    "type": "string"
+                },
+                "temperature": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
                 }
             }
         },
@@ -739,6 +1610,9 @@ var doc = `{
                 "metallicity": {
                     "type": "number"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "planetCount": {
                     "type": "integer"
                 },
@@ -750,6 +1624,46 @@ var doc = `{
                 },
                 "weight": {
                     "type": "number"
+                }
+            }
+        },
+        "models.UpdateUserDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         }

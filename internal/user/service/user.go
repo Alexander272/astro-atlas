@@ -24,8 +24,8 @@ func NewUserService(repo repository.IUser, hasher hasher.IPasswordHasher) *UserS
 	}
 }
 
-func (s *UserService) Create(ctx context.Context, user models.User) (id string, err error) {
-	candidate, err := s.repo.GetByEmail(ctx, user.Email)
+func (s *UserService) Create(ctx context.Context, dto models.CreateUserDTO) (id string, err error) {
+	candidate, err := s.repo.GetByEmail(ctx, dto.Email)
 	if err != nil {
 		if !errors.Is(err, apperror.ErrNotFound) {
 			return id, fmt.Errorf("failed to get user by email. error: %w", err)
@@ -35,6 +35,7 @@ func (s *UserService) Create(ctx context.Context, user models.User) (id string, 
 		return id, fmt.Errorf("user with the same email address already exists")
 	}
 
+	user := models.NewUser(dto)
 	pasHah, err := s.hasher.HashPassword(user.Password)
 	if err != nil {
 		logger.Errorf("failed to create user due to error %v", err)
@@ -77,7 +78,7 @@ func (s *UserService) GetById(ctx context.Context, userId string) (u models.User
 	return u, nil
 }
 
-func (s *UserService) Update(ctx context.Context, dto models.UpdateUserDto) error {
+func (s *UserService) Update(ctx context.Context, dto models.UpdateUserDTO) error {
 	updateUser := models.UpdateUser(dto)
 	err := s.repo.Update(ctx, updateUser)
 	if err != nil {

@@ -10,10 +10,10 @@ import (
 const CookieName = "session"
 
 type IUser interface {
-	Create(ctx context.Context, user models.User) (string, error)
+	Create(ctx context.Context, dto models.CreateUserDTO) (string, error)
 	GetAll(ctx context.Context) ([]models.User, error)
 	GetById(ctx context.Context, userId string) (models.User, error)
-	Update(ctx context.Context, dto models.UpdateUserDto) error
+	Update(ctx context.Context, dto models.UpdateUserDTO) error
 	Delete(ctx context.Context, userId string) error
 }
 

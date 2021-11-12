@@ -5,8 +5,9 @@ import (
 	"net/http"
 
 	"github.com/Alexander272/astro-atlas/internal/config"
-	"github.com/Alexander272/astro-atlas/internal/planet/handlers"
+	planetHandlers "github.com/Alexander272/astro-atlas/internal/planet/handlers"
 	"github.com/Alexander272/astro-atlas/internal/service"
+	userHandlers "github.com/Alexander272/astro-atlas/internal/user/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -59,10 +60,12 @@ func (h *Handler) Init(conf *config.Config) *gin.Engine {
 }
 
 func (h *Handler) initAPI(router *gin.Engine) {
-	planetHandler := handlers.NewHandler(h.services)
+	planetHandler := planetHandlers.NewHandler(h.services)
+	userHandler := userHandlers.NewHandler(h.services)
 
 	api := router.Group("/api")
 	{
+		userHandler.Init(api)
 		planetHandler.Init(api)
 	}
 }

@@ -29,7 +29,8 @@ type Deps struct {
 
 func NewServices(deps Deps) *Services {
 	return &Services{
-		Auth:   userService.NewAuthService(deps.Repos.User, deps.Repos.Session, deps.TokenManager, deps.Hasher, deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.Domain),
+		Auth: userService.NewAuthService(deps.Repos.User, deps.Repos.Session, deps.TokenManager, deps.Hasher, deps.AccessTokenTTL,
+			deps.RefreshTokenTTL, deps.Domain),
 		User:   userService.NewUserService(deps.Repos.User, deps.Hasher),
 		System: planetService.NewSystemService(deps.Repos.System),
 		Planet: planetService.NewPlanetService(deps.Repos.Planet),

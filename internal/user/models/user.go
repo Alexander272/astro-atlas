@@ -33,7 +33,7 @@ type CreateUserDTO struct {
 	Role     string `json:"role" binding:"required"`
 }
 
-func UpdateUser(dto UpdateUserDto) User {
+func UpdateUser(dto UpdateUserDTO) User {
 	return User{
 		Id:       dto.Id,
 		Name:     dto.Name,
@@ -43,7 +43,7 @@ func UpdateUser(dto UpdateUserDto) User {
 	}
 }
 
-type UpdateUserDto struct {
+type UpdateUserDTO struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`

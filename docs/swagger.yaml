@@ -1,26 +1,72 @@
 basePath: /api
 definitions:
-  handlers.dataResponse:
+  internal_planet_handlers.dataResponse:
     properties:
       count:
         type: integer
       data:
         type: object
     type: object
-  handlers.idResponse:
+  internal_planet_handlers.idResponse:
     properties:
       id:
         type: string
     type: object
-  handlers.response:
+  internal_planet_handlers.response:
+    properties:
+      message:
+        type: string
+    type: object
+  internal_user_handlers.dataResponse:
+    properties:
+      count:
+        type: integer
+      data:
+        type: object
+    type: object
+  internal_user_handlers.idResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  internal_user_handlers.response:
     properties:
       message:
         type: string
     type: object
   models.CreatePlanetDTO:
     properties:
+      age:
+        type: number
+      class:
+        type: string
+      dateOpened:
+        type: integer
+      description:
+        type: string
+      detectionMethod:
+        type: string
+      discoverer:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      period:
+        type: number
+      radius:
+        type: number
+      speed:
+        type: number
       systemId:
         type: string
+      temperature:
+        type: integer
+      weight:
+        type: number
+    required:
+    - name
+    - systemId
     type: object
   models.CreateSystemDTO:
     properties:
@@ -36,6 +82,112 @@ definitions:
         type: number
       metallicity:
         type: number
+      name:
+        type: string
+      planetCount:
+        type: integer
+      radius:
+        type: number
+      temperature:
+        type: integer
+      weight:
+        type: number
+    required:
+    - name
+    - planetCount
+    type: object
+  models.CreateUserDTO:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - role
+    type: object
+  models.Planet:
+    properties:
+      age:
+        type: number
+      class:
+        type: string
+      dateOpened:
+        type: integer
+      description:
+        type: string
+      detectionMethod:
+        type: string
+      discoverer:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      period:
+        type: number
+      radius:
+        type: number
+      speed:
+        type: number
+      systemId:
+        type: string
+      temperature:
+        type: integer
+      weight:
+        type: number
+    type: object
+  models.PlanetShort:
+    properties:
+      age:
+        type: number
+      class:
+        type: string
+      dateOpened:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      systemId:
+        type: string
+    type: object
+  models.SignInUserDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.System:
+    properties:
+      age:
+        type: number
+      class:
+        type: string
+      constellation:
+        type: string
+      distance:
+        type: number
+      id:
+        type: string
+      magnitude:
+        type: number
+      metallicity:
+        type: number
+      name:
+        type: string
       planetCount:
         type: integer
       radius:
@@ -45,12 +197,62 @@ definitions:
       weight:
         type: number
     type: object
-  models.UpdatePlanetDTO:
+  models.SystemShort:
     properties:
+      age:
+        type: number
+      class:
+        type: string
+      constellation:
+        type: string
+      distance:
+        type: number
       id:
         type: string
+      magnitude:
+        type: number
+      name:
+        type: string
+      planetCount:
+        type: integer
+    type: object
+  models.Token:
+    properties:
+      accessToken:
+        type: string
+    type: object
+  models.UpdatePlanetDTO:
+    properties:
+      age:
+        type: number
+      class:
+        type: string
+      dateOpened:
+        type: integer
+      description:
+        type: string
+      detectionMethod:
+        type: string
+      discoverer:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      period:
+        type: number
+      radius:
+        type: number
+      speed:
+        type: number
       systemId:
         type: string
+      temperature:
+        type: integer
+      weight:
+        type: number
     type: object
   models.UpdateSystemDTO:
     properties:
@@ -68,6 +270,8 @@ definitions:
         type: number
       metallicity:
         type: number
+      name:
+        type: string
       planetCount:
         type: integer
       radius:
@@ -77,6 +281,32 @@ definitions:
       weight:
         type: number
     type: object
+  models.UpdateUserDTO:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+      role:
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -84,7 +314,124 @@ info:
   title: Astro Atlas
   version: "0.1"
 paths:
-  /planet:
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: обновление токенов доступа
+      operationId: refresh
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_user_handlers.dataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Token'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      summary: Refresh
+      tags:
+      - auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: вход в систему
+      operationId: signIn
+      parameters:
+      - description: credentials
+        in: body
+        name: signIn
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_user_handlers.dataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Token'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      summary: Sign In
+      tags:
+      - auth
+  /auth/sign-out:
+    post:
+      consumes:
+      - application/json
+      description: выход из системы
+      operationId: signOut
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      summary: Sign Out
+      tags:
+      - auth
+  /planets:
     get:
       consumes:
       - application/json
@@ -102,29 +449,34 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/handlers.dataResponse'
-            type: array
+            allOf:
+            - $ref: '#/definitions/internal_planet_handlers.dataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.PlanetShort'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       summary: Get Planet List
       tags:
       - planets
-  /planet/:
+  /planets/:
     post:
       consumes:
       - application/json
@@ -140,32 +492,32 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/handlers.idResponse'
+            $ref: '#/definitions/internal_planet_handlers.idResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       security:
       - ApiKeyAuth: []
       summary: Create Planet
       tags:
       - planets
-  /planet/{id}:
+  /planets/{id}:
     delete:
       consumes:
       - application/json
@@ -180,26 +532,26 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       security:
       - ApiKeyAuth: []
       summary: Delete Planet
@@ -222,23 +574,28 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.dataResponse'
+            allOf:
+            - $ref: '#/definitions/internal_planet_handlers.dataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Planet'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       summary: Get Planet By Id
       tags:
       - planets
@@ -265,29 +622,29 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       security:
       - ApiKeyAuth: []
       summary: updatePlanet
       tags:
       - planets
-  /system/:
+  /systems/:
     get:
       consumes:
       - application/json
@@ -299,25 +656,30 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/handlers.dataResponse'
-            type: array
+            allOf:
+            - $ref: '#/definitions/internal_planet_handlers.dataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.SystemShort'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       summary: Get System List
       tags:
       - systems
@@ -336,32 +698,32 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/handlers.idResponse'
+            $ref: '#/definitions/internal_planet_handlers.idResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       security:
       - ApiKeyAuth: []
       summary: Create System
       tags:
       - systems
-  /system/{id}:
+  /systems/{id}:
     delete:
       consumes:
       - application/json
@@ -376,26 +738,26 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       security:
       - ApiKeyAuth: []
       summary: Delete System
@@ -418,23 +780,28 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.dataResponse'
+            allOf:
+            - $ref: '#/definitions/internal_planet_handlers.dataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.System'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       summary: Get System By Id
       tags:
       - systems
@@ -461,28 +828,238 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/handlers.response'
+            $ref: '#/definitions/internal_planet_handlers.response'
       security:
       - ApiKeyAuth: []
       summary: Update System
       tags:
       - systems
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: получение списка всех пользователей
+      operationId: getAllUsers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_user_handlers.dataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: создание пользователя
+      operationId: createUser
+      parameters:
+      - description: user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_user_handlers.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create User
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: удаление пользователя
+      operationId: deleteUser
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete User
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: получение данных пользователя
+      operationId: getUserById
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_user_handlers.dataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User By Id
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: обновление пользователя
+      operationId: updateUser
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/internal_user_handlers.response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update User
+      tags:
+      - users
 securityDefinitions:
   ApiKeyAuth:
     in: header
