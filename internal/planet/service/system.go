@@ -6,15 +6,15 @@ import (
 	"fmt"
 
 	"github.com/Alexander272/astro-atlas/internal/planet/models"
-	"github.com/Alexander272/astro-atlas/internal/repository"
+	"github.com/Alexander272/astro-atlas/internal/planet/repository"
 	"github.com/Alexander272/astro-atlas/pkg/apperror"
 )
 
 type SystemService struct {
-	repo *repository.Repositories
+	repo repository.ISystem
 }
 
-func NewSystemService(repo *repository.Repositories) *SystemService {
+func NewSystemService(repo repository.ISystem) *SystemService {
 	return &SystemService{
 		repo: repo,
 	}
@@ -22,7 +22,7 @@ func NewSystemService(repo *repository.Repositories) *SystemService {
 
 func (s *SystemService) Create(ctx context.Context, dto models.CreateSystemDTO) (systemId string, err error) {
 	system := models.NewSystem(dto)
-	systemId, err = s.repo.System.Create(ctx, system)
+	systemId, err = s.repo.Create(ctx, system)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return systemId, err
@@ -34,7 +34,7 @@ func (s *SystemService) Create(ctx context.Context, dto models.CreateSystemDTO) 
 }
 
 func (s *SystemService) GetList(ctx context.Context) ([]models.SystemShort, error) {
-	systems, err := s.repo.System.GetList(ctx)
+	systems, err := s.repo.GetList(ctx)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return systems, err
@@ -49,7 +49,7 @@ func (s *SystemService) GetList(ctx context.Context) ([]models.SystemShort, erro
 }
 
 func (s *SystemService) GetById(ctx context.Context, systemId string) (models.System, error) {
-	system, err := s.repo.System.GetById(ctx, systemId)
+	system, err := s.repo.GetById(ctx, systemId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return system, err
@@ -61,7 +61,7 @@ func (s *SystemService) GetById(ctx context.Context, systemId string) (models.Sy
 }
 
 func (s *SystemService) Update(ctx context.Context, dto models.UpdateSystemDTO) error {
-	err := s.repo.System.Update(ctx, models.System(dto))
+	err := s.repo.Update(ctx, models.System(dto))
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return err
@@ -72,7 +72,7 @@ func (s *SystemService) Update(ctx context.Context, dto models.UpdateSystemDTO) 
 }
 
 func (s *SystemService) Delete(ctx context.Context, systemId string) error {
-	err := s.repo.System.Delete(ctx, systemId)
+	err := s.repo.Delete(ctx, systemId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return err

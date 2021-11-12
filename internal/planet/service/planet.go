@@ -6,15 +6,15 @@ import (
 	"fmt"
 
 	"github.com/Alexander272/astro-atlas/internal/planet/models"
-	"github.com/Alexander272/astro-atlas/internal/repository"
+	"github.com/Alexander272/astro-atlas/internal/planet/repository"
 	"github.com/Alexander272/astro-atlas/pkg/apperror"
 )
 
 type PlanetService struct {
-	repo *repository.Repositories
+	repo repository.IPlanet
 }
 
-func NewPlanetService(repo *repository.Repositories) *PlanetService {
+func NewPlanetService(repo repository.IPlanet) *PlanetService {
 	return &PlanetService{
 		repo: repo,
 	}
@@ -22,7 +22,7 @@ func NewPlanetService(repo *repository.Repositories) *PlanetService {
 
 func (s *PlanetService) Create(ctx context.Context, dto models.CreatePlanetDTO) (planetId string, err error) {
 	planet := models.NewPlanet(dto)
-	planetId, err = s.repo.Planet.Create(ctx, planet)
+	planetId, err = s.repo.Create(ctx, planet)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return planetId, err
@@ -34,7 +34,7 @@ func (s *PlanetService) Create(ctx context.Context, dto models.CreatePlanetDTO) 
 }
 
 func (s *PlanetService) GetList(ctx context.Context, systemId string) (planets []models.PlanetShort, err error) {
-	planets, err = s.repo.Planet.GetList(ctx, systemId)
+	planets, err = s.repo.GetList(ctx, systemId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return planets, err
@@ -49,7 +49,7 @@ func (s *PlanetService) GetList(ctx context.Context, systemId string) (planets [
 }
 
 func (s *PlanetService) GetById(ctx context.Context, planetId string) (planet models.Planet, err error) {
-	planet, err = s.repo.Planet.GetById(ctx, planetId)
+	planet, err = s.repo.GetById(ctx, planetId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return planet, err
@@ -60,7 +60,7 @@ func (s *PlanetService) GetById(ctx context.Context, planetId string) (planet mo
 }
 
 func (s *PlanetService) Update(ctx context.Context, dto models.UpdatePlanetDTO) error {
-	err := s.repo.Planet.Update(ctx, models.Planet(dto))
+	err := s.repo.Update(ctx, models.Planet(dto))
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return err
@@ -71,7 +71,7 @@ func (s *PlanetService) Update(ctx context.Context, dto models.UpdatePlanetDTO) 
 }
 
 func (s *PlanetService) Delete(ctx context.Context, planetId string) error {
-	err := s.repo.Planet.Delete(ctx, planetId)
+	err := s.repo.Delete(ctx, planetId)
 	if err != nil {
 		if errors.Is(err, apperror.ErrNotFound) {
 			return err

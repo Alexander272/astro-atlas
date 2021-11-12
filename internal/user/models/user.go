@@ -1,8 +1,7 @@
 package models
 
-type Tokens struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"-"`
+type Token struct {
+	AccessToken string `json:"accessToken"`
 }
 
 type User struct {
@@ -11,6 +10,11 @@ type User struct {
 	Email    string `json:"email" bson:"email"`
 	Password string `json:"-" bson:"password"`
 	Role     string `json:"role" bson:"role"`
+}
+
+type SignInUserDTO struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,max=64"`
 }
 
 func NewUser(dto CreateUserDTO) User {
