@@ -19,5 +19,8 @@
     BCRYPT_DEFAULT_COST=14
     BCRYPT_MAX_COST=30
 
+    STORAGE_ENDPOINT="<your storage crenditails file>"
+    STORAGE_BUCKET="<your storage bucket>"
+
 Запуск докер командой `docker-compose up`
 запуск dev версии `air -d`

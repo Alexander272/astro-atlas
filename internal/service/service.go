@@ -8,6 +8,7 @@ import (
 	userService "github.com/Alexander272/astro-atlas/internal/user/service"
 	"github.com/Alexander272/astro-atlas/pkg/auth"
 	"github.com/Alexander272/astro-atlas/pkg/hasher"
+	"github.com/Alexander272/astro-atlas/pkg/storage"
 )
 
 type Services struct {
@@ -18,8 +19,8 @@ type Services struct {
 }
 
 type Deps struct {
-	Repos *repository.Repositories
-	// StorageProvider        storage.Provider
+	Repos           *repository.Repositories
+	StorageProvider storage.Provider
 	Hasher          hasher.IPasswordHasher
 	TokenManager    auth.ITokenManager
 	AccessTokenTTL  time.Duration

@@ -15,6 +15,7 @@ type (
 		Redis       RedisConfig
 		Auth        AuthConfig
 		Http        HttpConfig
+		FileStorage FileStorageConfig
 	}
 
 	MongoConfig struct {
@@ -46,6 +47,11 @@ type (
 		MinCost     int
 		DefaultCost int
 		MaxCost     int
+	}
+
+	FileStorageConfig struct {
+		Endpoint string
+		Bucket   string
 	}
 
 	HttpConfig struct {
@@ -116,6 +122,9 @@ func setFromEnv(conf *Config) error {
 		return err
 	}
 	if err := envconfig.Process("bcrypt", &conf.Auth.Bcrypt); err != nil {
+		return err
+	}
+	if err := envconfig.Process("storage", &conf.FileStorage); err != nil {
 		return err
 	}
 	conf.Environment = os.Getenv("APP_ENV")

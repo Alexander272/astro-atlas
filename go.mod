@@ -64,6 +64,7 @@ require (
 )
 
 require (
+	firebase.google.com/go/v4 v4.6.1
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -76,4 +77,21 @@ require (
 	github.com/swaggo/swag v1.7.4 // indirect
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
 	golang.org/x/tools v0.1.5 // indirect
+)
+
+require (
+	cloud.google.com/go v0.93.3 // indirect
+	cloud.google.com/go/firestore v1.6.0 // indirect
+	cloud.google.com/go/storage v1.10.0 // indirect
+	github.com/chai2010/webp v1.1.0
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/uuid v1.3.0
+	github.com/googleapis/gax-go/v2 v2.1.0 // indirect
+	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
+	google.golang.org/api v0.56.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20210828152312-66f60bf46e71 // indirect
+	google.golang.org/grpc v1.40.0 // indirect
 )
