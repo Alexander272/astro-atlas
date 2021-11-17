@@ -42,7 +42,7 @@ func NewAuthService(repo repository.IUser, ses repository.ISession, tokenManager
 func (s *AuthService) SignIn(ctx context.Context, dto models.SignInUserDTO, ua, ip string) (token models.Token, cookie http.Cookie, err error) {
 	user, err := s.repo.GetByEmail(ctx, dto.Email)
 	if err != nil {
-		logger.Errorf("failed to find user by email. errors: %w", err)
+		logger.Errorf("failed to find user by email. errors: %s", err.Error())
 		if errors.Is(err, apperror.ErrNotFound) {
 			return token, cookie, err
 		}
@@ -55,12 +55,12 @@ func (s *AuthService) SignIn(ctx context.Context, dto models.SignInUserDTO, ua, 
 
 	accessToken, err := s.tokenManager.NewJWT(user.Id, user.Email, user.Role, s.accessTokenTTL)
 	if err != nil {
-		logger.Errorf("failed to generate jwt token. error: %w", err)
+		logger.Errorf("failed to generate jwt token. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to sign in")
 	}
 	refreshToken, err := s.tokenManager.NewRefreshToken()
 	if err != nil {
-		logger.Errorf("failed to generate refresh token. error: %w", err)
+		logger.Errorf("failed to generate refresh token. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to sign in")
 	}
 
@@ -72,7 +72,7 @@ func (s *AuthService) SignIn(ctx context.Context, dto models.SignInUserDTO, ua, 
 		Ip:     ip,
 		Exp:    s.refreshTokenTTL,
 	}); err != nil {
-		logger.Errorf("failed to create session. error: %w", err)
+		logger.Errorf("failed to create session. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to create session")
 	}
 
@@ -101,7 +101,7 @@ func (s *AuthService) SignOut(ctx context.Context, token string) (cookie http.Co
 	}
 
 	if err = s.session.Delete(ctx, token); err != nil {
-		logger.Errorf("failed to remove session. error: %w", err)
+		logger.Errorf("failed to remove session. error: %s", err.Error())
 		return http.Cookie{}, fmt.Errorf("failed to remove session")
 	}
 	return cookie, nil
@@ -110,7 +110,7 @@ func (s *AuthService) SignOut(ctx context.Context, token string) (cookie http.Co
 func (s *AuthService) Refresh(ctx context.Context, refToken, ua, ip string) (token models.Token, cookie http.Cookie, err error) {
 	data, err := s.session.GetDel(ctx, refToken)
 	if err != nil {
-		logger.Errorf("failed to getdel session. error: %w", err)
+		logger.Errorf("failed to getdel session. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to get session")
 	}
 
@@ -126,12 +126,12 @@ func (s *AuthService) Refresh(ctx context.Context, refToken, ua, ip string) (tok
 
 	accessToken, err := s.tokenManager.NewJWT(data.UserId, data.Email, data.Role, s.accessTokenTTL)
 	if err != nil {
-		logger.Errorf("failed to generate jwt token. error: %w", err)
+		logger.Errorf("failed to generate jwt token. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to sign in")
 	}
 	refreshToken, err := s.tokenManager.NewRefreshToken()
 	if err != nil {
-		logger.Errorf("failed to generate refresh token. error: %w", err)
+		logger.Errorf("failed to generate refresh token. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to sign in")
 	}
 
@@ -143,7 +143,7 @@ func (s *AuthService) Refresh(ctx context.Context, refToken, ua, ip string) (tok
 		Ip:     ip,
 		Exp:    s.refreshTokenTTL,
 	}); err != nil {
-		logger.Errorf("failed to create session. error: %w", err)
+		logger.Errorf("failed to create session. error: %s", err.Error())
 		return token, cookie, fmt.Errorf("failed to create session")
 	}
 
@@ -164,7 +164,7 @@ func (s *AuthService) Refresh(ctx context.Context, refToken, ua, ip string) (tok
 func (s *AuthService) TokenParse(token string) (userId string, role string, err error) {
 	claims, err := s.tokenManager.Parse(token)
 	if err != nil {
-		return userId, role, fmt.Errorf("failed to parse token. error: %w", err)
+		return userId, role, fmt.Errorf("failed to parse token. error: %s", err.Error())
 	}
 	return claims["userId"].(string), claims["role"].(string), err
 }

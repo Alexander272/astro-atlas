@@ -17,7 +17,7 @@ type Repositories struct {
 	System  planetRepo.ISystem
 }
 
-func NewRepositories(db *mongo.Database, client *redis.Client) *Repositories {
+func NewRepositories(db *mongo.Database, client redis.Cmdable) *Repositories {
 	return &Repositories{
 		Session: sessionDb.NewSessionRepo(client),
 		User:    userDb.NewUserRepo(db, usersCollection),

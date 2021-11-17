@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Alexander272/astro-atlas/docs"
 	"github.com/Alexander272/astro-atlas/internal/config"
 	planetHandlers "github.com/Alexander272/astro-atlas/internal/planet/handlers"
 	"github.com/Alexander272/astro-atlas/internal/service"
@@ -12,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"github.com/swaggo/swag/example/basic/docs"
 )
 
 type Handler struct {

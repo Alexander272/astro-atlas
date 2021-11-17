@@ -3,7 +3,9 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Alexander272/astro-atlas/pkg/logger"
@@ -11,10 +13,10 @@ import (
 )
 
 type SessionRepo struct {
-	db *redis.Client
+	db redis.Cmdable
 }
 
-func NewSessionRepo(db *redis.Client) *SessionRepo {
+func NewSessionRepo(db redis.Cmdable) *SessionRepo {
 	return &SessionRepo{db: db}
 }
 
@@ -37,6 +39,13 @@ func (d SessionData) MarshalBinary() ([]byte, error) {
 // }
 
 func (r *SessionRepo) Create(ctx context.Context, token string, data SessionData) error {
+	if strings.Trim(token, " ") == "" {
+		return errors.New("empty token")
+	}
+	if (data == SessionData{}) {
+		return errors.New("empty user data")
+	}
+
 	res := r.db.Set(ctx, token, data, data.Exp)
 	if res.Err() != nil {
 		return fmt.Errorf("failed to execute query. error: %w", res.Err())
@@ -47,6 +56,10 @@ func (r *SessionRepo) Create(ctx context.Context, token string, data SessionData
 }
 
 func (r *SessionRepo) GetDel(ctx context.Context, key string) (data SessionData, err error) {
+	if strings.Trim(key, " ") == "" {
+		return data, errors.New("empty key")
+	}
+
 	cmd := r.db.GetDel(ctx, key)
 	if cmd.Err() != nil {
 		return data, fmt.Errorf("failed to execute query. error: %w", cmd.Err())
@@ -56,11 +69,15 @@ func (r *SessionRepo) GetDel(ctx context.Context, key string) (data SessionData,
 		// todo дописать ошибку
 		return data, fmt.Errorf("failed to ... . error: %w", err)
 	}
-	logger.Debug(data)
+	logger.Info(data)
 	return data, nil
 }
 
 func (r *SessionRepo) Delete(ctx context.Context, key string) error {
+	if strings.Trim(key, " ") == "" {
+		return errors.New("empty key")
+	}
+
 	res := r.db.Del(ctx, key)
 	if res.Err() != nil {
 		return fmt.Errorf("failed to execute query. error: %w", res.Err())
